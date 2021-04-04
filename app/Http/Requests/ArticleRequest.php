@@ -24,8 +24,17 @@ class ArticleRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:articles|min:5|max:255',
+            'name' => 'required|min:5|max:255',
             'content' => 'required|min:100'
         ];
+    }
+
+    public function messages()
+    {
+        return [
+            'name.require' => 'Tên bài viết không được để trống.',
+            'name.min' => 'Tên bài viết chứa tối thiếu :min ký tự.',
+            'name.max' => 'Tên bài viết chứa tối đa :max ký tự.'
+        ]
     }
 }

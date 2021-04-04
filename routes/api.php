@@ -17,15 +17,23 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', 'UserController@register');
 Route::post('/login', 'UserController@login');
 
-
-//Bài viết
-Route::resource('/article', 'ArticleController');
-//Thư mục
-Route::resource('/category', 'CategoryController');
-
 Route::group(['middleware' => 'auth:api'], function () {
+
+    //Thư mục
+    Route::resource('/category', 'CategoryController')->except(['index', 'show']);
     //Đăng xuất
     Route::post('/logout', 'UserController@logout');
     //Xem trang cá nhân
-    Route::get('/user', 'UserController@user');
+    Route::get('/user/{user}', 'UserController@show');
+    //Xem trang cá nhân
+    Route::post('/user/update/{user}', 'UserController@update');
+});
+
+// --- Group ---
+Route::group([],function() {
+    //Get all categories
+    Route::get('category', 'CategoryController@index');
+    // Get category by id
+    Route::get('category/{category}', 'CategoryController@show');
+
 });

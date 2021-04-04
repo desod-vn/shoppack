@@ -4,105 +4,77 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Category;
-use App\Http\Requests\CategoryRequest;
+use App\Http\Requests\Category\CategoryRequest;
+use App\Policies\CategoryPolicy;
 
 class CategoryController extends Controller
 {
-    public function __construct() {
-        $this->middleware('auth:api', [
-            'except' => ['index', 'show']
-        ]);
-    }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function __construct()
     {
-        $category = Category::all();
+        return $this->authorizeResource(Category::class, 'category', ['except' => ['index', 'show']]);
+    }
+   
+    public function index(Request $request)
+    {
+        $categoryQuery = Category::query();
 
+        if($request->has('search'))
+        {
+            $categoryQuery->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        $category = $categoryQuery->paginate($request->per_page);
+        
         return response()->json($category);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(CategoryRequest $request)
     {
         $category = new Category;
         
-        $category->name = $request->name;
-        $category->user_id = Auth::user()->id;
+        $category->fill($request->all());
+        $category->slug = Str::slug($category->name, '-');
 
         $category->save();
 
         return response()->json($category);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show(Category $category)
     {
         return response()->json($category);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function edit()
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function update(CategoryRequest $request, Category $category)
     {
-        $category->name = $request->name;
-        $category->user_id = Auth::user()->id;
+        $category->fill($request->all());
+        $category->slug = Str::slug($request->name, '-');
 
         $category->save();
 
         return response()->json($category);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Category $category)
     {
         $category->delete();
+
         return response()->json([
             'message' =>  'Delete success'
         ]);
