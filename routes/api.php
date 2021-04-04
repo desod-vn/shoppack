@@ -27,6 +27,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/user/{user}', 'UserController@show');
     //Xem trang cá nhân
     Route::post('/user/update/{user}', 'UserController@update');
+    //Xem trang cá nhân
+    Route::delete('/user/delete/{user}', 'UserController@destroy');
 });
 
 // --- Group ---

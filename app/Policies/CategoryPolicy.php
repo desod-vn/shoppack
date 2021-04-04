@@ -11,7 +11,7 @@ class CategoryPolicy
     use HandlesAuthorization;
 
     public function before(User $user){
-        if($user->level == 1){
+        if($user->role == "admin"){
             return true;
         }
         return null;

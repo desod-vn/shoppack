@@ -15,4 +15,11 @@ class UserPolicy
         }
         return false;
     }
+
+    public function deleteUser(User $user){
+        if($user->role === 'admin'){
+            return true;
+        }
+        return false;
+    }
 }
