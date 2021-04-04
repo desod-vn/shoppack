@@ -22,7 +22,11 @@ class UserController extends Controller
 
         $user->save();
 
-        return response()->json($user);
+        return response()->json([
+            'status' => true,
+            'message' => 'Đăng ký thành công.',
+            'user' => $user,
+            ]);
     }
 
     public function login(LoginRequest $request)
@@ -32,12 +36,17 @@ class UserController extends Controller
             $user = User::where('username', $request->username)->first();
             $user->token = $user->createToken('App')->accessToken;
 
-            return response()->json($user);
+            return response()->json([
+                'status' => true,
+                'message' => 'Đăng nhập thành công',
+                'user' => $user,
+            ]);
         }
        
         return response()->json([
-            'message' => 'Unauthorized',
-        ], 401); 
+            'message' => 'Đăng nhập không thành công.',
+            'status' => false,
+        ]); 
     }
 
     public function logout()
@@ -46,18 +55,23 @@ class UserController extends Controller
         {
             Auth::user()->token()->revoke();
             return response()->json([
-                'message' => 'Logout success'
-            ], 200);
+                'message' => 'Đăng xuất thành công.',
+                'status' => true,
+            ]);
         }
 
         return response()->json([
-            'message' => 'Unauthorized',
-        ], 401);
+            'message' => 'Đăng xuất không thành công.',
+            'status' => false,
+        ]);
     }
 
     public function show(User $user)
     {
-        return response()->json($user); 
+        return response()->json([
+            'status' => true,
+            'user' => $user,
+        ]); 
     }
 
     public function update(User $user, UpdateRequest $request)
@@ -73,7 +87,11 @@ class UserController extends Controller
 
         $user->save();
 
-        return response()->json($user);
+        return response()->json([
+            'status' => true,
+            'message' => 'Cập nhật thông tin thành công.',
+            'user' => $user,
+        ]);
     }
 
     public function destroy(User $user)
@@ -83,7 +101,8 @@ class UserController extends Controller
         $user->delete();
 
         return response()->json([
-            'message' =>  'Delete success'
+            'status' => true,
+            'message' => 'Xóa tài khoản thành công.',
         ]);
     }
 
